@@ -1,32 +1,36 @@
-import java.util.*;
+import java.util.Arrays;
 
-public class WeekRace {
-    public int countHillValley(int[] nums) {
-        int len = nums.length;
-        int count = 0;
-        for (int i = 1; i < len - 1; i++) {
-            int num = nums[i];
-            if (num == nums[i - 1]) {
-                continue;
-            }
-            // 左右不相等
-            int left = num, right = num;
-            for (int l = i - 1; l >= 0; l--) {
-                if (nums[l] != num) {
-                    left = nums[l];
-                    break;
-                }
-            }
-            for (int r = i + 1; r < len; r++) {
-                if (nums[r] != num) {
-                    right = nums[r];
-                    break;
-                }
-            }
-            if ((num > left && num > right) || (num < left) && (num < right)) {
-                count++;
+class Solution {
+    public int maximumCandies(int[] candies, long k) {
+        long sum = Arrays.stream(candies).asLongStream().sum();
+        // 每个人能拿到的糖果数范围：[0, sum/k]
+        long low = 0, hi = sum / k;
+        while (low < hi) {
+            long mid = (low + hi) >> 1;
+            if (check(candies, k, mid)) {
+                low = mid + 1;
+            } else {
+                hi = mid;
             }
         }
-        return count;
+        if (check(candies, k, low)) {
+            return (int) low;
+        }
+        return (int) (low - 1);
+    }
+
+    public boolean check(int[] candies, long k, long perCount) {
+        if (perCount == 0) {
+            return true;
+        }
+        for (int can : candies) {
+            if (can >= perCount) {
+                k -= can / perCount;
+            }
+            if (k <= 0) {
+                break;
+            }
+        }
+        return k <= 0;
     }
 }
